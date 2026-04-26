@@ -16,7 +16,7 @@
       { %22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E%22, %22sizes%22:%22any%22, %22type%22:%22image/svg+xml%22 }
     ]
   }">
-  <title>Daily Hope – Installable App</title>
+  <title>Daily Hope – Auto Popup</title>
   <style>
     * {
       margin: 0;
@@ -44,6 +44,10 @@
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
     h1 {
       font-size: 1.875rem;
@@ -79,7 +83,7 @@
       flex-direction: column;
       gap: 1rem;
     }
-    input, button {
+    input, button, select {
       width: 100%;
       padding: 0.75rem;
       border-radius: 0.75rem;
@@ -87,7 +91,7 @@
       font-size: 1rem;
       outline: none;
     }
-    input:focus {
+    input:focus, select:focus {
       border-color: #3b82f6;
       ring: 2px solid #3b82f6;
     }
@@ -102,6 +106,12 @@
     button:hover {
       background-color: #1d4ed8;
     }
+    .popup-btn {
+      background-color: #16a34a;
+    }
+    .popup-btn:hover {
+      background-color: #15803d;
+    }
     .slider-label {
       font-size: 0.875rem;
       font-weight: 500;
@@ -115,7 +125,7 @@
       position: fixed;
       bottom: 1.5rem;
       right: 1.5rem;
-      background-color: #16a34a;
+      background-color: #0891b2;
       color: white;
       padding: 0.75rem 1.25rem;
       border-radius: 9999px;
@@ -127,17 +137,94 @@
       z-index: 50;
     }
     .install-btn:hover {
-      background-color: #15803d;
+      background-color: #0e7490;
+    }
+    .flex-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .flex-row select, .flex-row button {
+      flex: 1;
+    }
+    .status {
+      font-size: 0.875rem;
+      text-align: center;
+      color: #4b5563;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #f3f4f6;
+      border-radius: 0.5rem;
+    }
+    .countdown {
+      font-weight: bold;
+      color: #2563eb;
     }
     @media (max-width: 640px) {
       .card { padding: 1rem; }
       h1 { font-size: 1.5rem; }
     }
+    
+    /* Popup overlay styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeInUp 0.3s ease-out;
+    }
+    .popup-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem;
+      max-width: 90%;
+      width: 400px;
+      text-align: center;
+      animation: popIn 0.4s ease-out;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    }
+    .popup-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #1f2937;
+    }
+    .popup-card p {
+      font-size: 1.125rem;
+      margin-bottom: 1.5rem;
+      color: #374151;
+      line-height: 1.5;
+    }
+    .popup-card button {
+      background: #2563eb;
+      padding: 0.75rem 1.5rem;
+      width: auto;
+      min-width: 120px;
+    }
+    .close-popup {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #9ca3af;
+      width: auto;
+      padding: 0.5rem;
+    }
+    .close-popup:hover {
+      color: #374151;
+    }
   </style>
 </head>
 <body>
   <div class="card" id="app">
-    <h1>Daily Hope</h1>
+    <h1>💙 Daily Hope</h1>
     <div class="message-container">
       <div class="hope-message" id="hopeMessage">Loading...</div>
       <div class="verse-box">
@@ -152,6 +239,16 @@
         <input type="range" id="fontSizeSlider" min="16" max="40" value="22">
       </div>
       <button id="updateBtn">Update Message</button>
+      
+      <hr>
+      <div class="flex-row">
+        <select id="popupInterval">
+          <option value="30">Every 30 minutes</option>
+          <option value="60">Every 1 hour</option>
+        </select>
+        <button id="startPopupBtn" class="popup-btn">⏰ Start Auto Popup</button>
+      </div>
+      <div id="popupStatus" class="status">💡 Click "Start Auto Popup" - it will pop up on your screen automatically!</div>
     </div>
   </div>
   <button id="installBtn" class="install-btn" style="display: none;">📲 Install App</button>
@@ -190,23 +287,33 @@
     const sizeValueSpan = document.getElementById('sizeValue');
     const updateBtn = document.getElementById('updateBtn');
     const installBtn = document.getElementById('installBtn');
+    const startPopupBtn = document.getElementById('startPopupBtn');
+    const popupIntervalSelect = document.getElementById('popupInterval');
+    const popupStatus = document.getElementById('popupStatus');
 
     // State
-    let currentMessage = randomItem(defaultMessages);
-    let currentVerse = randomItem(defaultVerses);
     let customMessage = '';
     let customVerse = '';
     let fontSize = 22;
+    let popupTimer = null;
+    let popupActive = false;
+    let nextPopupTime = null;
 
-    // Update UI
+    // Get current message (for popup)
+    function getCurrentMessage() {
+      if (customMessage.trim() !== '') return customMessage;
+      return randomItem(defaultMessages);
+    }
+    
+    function getCurrentVerse() {
+      if (customVerse.trim() !== '') return customVerse;
+      return randomItem(defaultVerses);
+    }
+
+    // Update main UI
     function refreshDisplay() {
-      // Use custom if provided, else random default
-      const msg = customMessage.trim() !== '' ? customMessage : randomItem(defaultMessages);
-      const ver = customVerse.trim() !== '' ? customVerse : randomItem(defaultVerses);
-      currentMessage = msg;
-      currentVerse = ver;
-      hopeMessageEl.textContent = currentMessage;
-      verseTextEl.textContent = currentVerse;
+      hopeMessageEl.textContent = getCurrentMessage();
+      verseTextEl.textContent = getCurrentVerse();
     }
 
     function applyFontSize() {
@@ -219,28 +326,168 @@
       customMessage = customMessageInput.value;
       customVerse = customVerseInput.value;
       refreshDisplay();
+      // Save to localStorage
+      localStorage.setItem('customMessage', customMessage);
+      localStorage.setItem('customVerse', customVerse);
     }
 
     function handleFontSizeChange(e) {
       fontSize = Number(e.target.value);
       applyFontSize();
+      localStorage.setItem('fontSize', fontSize);
     }
 
-    // Auto-refresh every hour (keeps using current custom values)
+    // ----- POPUP FUNCTION (NO PERMISSION NEEDED!) -----
+    function showPopup() {
+      const message = getCurrentMessage();
+      const verse = getCurrentVerse();
+      
+      // Create popup overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'popup-overlay';
+      overlay.innerHTML = `
+        <div class="popup-card">
+          <button class="close-popup" onclick="this.closest('.popup-overlay').remove()">✕</button>
+          <h2>💙 Time for Hope!</h2>
+          <p style="font-size: 20px; font-weight: 500;">${message}</p>
+          <p style="font-style: italic; color: #6b7280;">${verse}</p>
+          <button onclick="this.closest('.popup-overlay').remove()">OK</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      
+      // Auto-close after 10 seconds
+      setTimeout(() => {
+        if (overlay && overlay.parentNode) overlay.remove();
+      }, 10000);
+      
+      // Play a subtle sound/beep (optional)
+      try {
+        const beep = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
+        beep.play().catch(() => {});
+      } catch(e) {}
+      
+      // Update status with next popup time
+      updateStatusMessage();
+    }
+    
+    function updateStatusMessage() {
+      if (popupActive && nextPopupTime) {
+        const minutesLeft = Math.ceil((nextPopupTime - Date.now()) / 60000);
+        if (minutesLeft > 0) {
+          popupStatus.innerHTML = `✅ Auto popup ACTIVE! Next popup in <span class="countdown">${minutesLeft} minutes</span>. The app will pop up automatically on your screen! 🎉`;
+        } else {
+          popupStatus.innerHTML = `✅ Auto popup ACTIVE! Waiting for next scheduled time...`;
+        }
+      } else if (popupActive) {
+        popupStatus.innerHTML = `✅ Auto popup ACTIVE! The app will pop up on your screen every ${popupIntervalSelect.value} minutes.`;
+      } else {
+        popupStatus.innerHTML = `💡 Click "Start Auto Popup" - it will pop up on your screen automatically (no permission needed!)`;
+      }
+    }
+    
+    function startPopup(minutes) {
+      // Stop existing timer
+      if (popupTimer) {
+        clearInterval(popupTimer);
+        popupTimer = null;
+      }
+      
+      // Show first popup immediately to confirm it works
+      setTimeout(() => {
+        showPopup();
+      }, 500);
+      
+      // Set interval for future popups
+      popupTimer = setInterval(() => {
+        showPopup();
+        // Refresh status after showing popup
+        updateStatusMessage();
+      }, minutes * 60 * 1000);
+      
+      // Calculate next popup time
+      nextPopupTime = Date.now() + (minutes * 60 * 1000);
+      popupActive = true;
+      
+      // Save to localStorage
+      localStorage.setItem('popupActive', 'true');
+      localStorage.setItem('popupMinutes', minutes);
+      
+      updateStatusMessage();
+    }
+    
+    function stopPopup() {
+      if (popupTimer) {
+        clearInterval(popupTimer);
+        popupTimer = null;
+      }
+      popupActive = false;
+      nextPopupTime = null;
+      localStorage.removeItem('popupActive');
+      popupStatus.innerHTML = `⏸️ Auto popup stopped. Click "Start Auto Popup" to restart.`;
+    }
+    
+    function handleStartPopup() {
+      if (popupActive) {
+        stopPopup();
+        startPopupBtn.textContent = '⏰ Start Auto Popup';
+        startPopupBtn.style.backgroundColor = '#16a34a';
+      } else {
+        const minutes = parseInt(popupIntervalSelect.value, 10);
+        startPopup(minutes);
+        startPopupBtn.textContent = '🛑 Stop Auto Popup';
+        startPopupBtn.style.backgroundColor = '#dc2626';
+      }
+    }
+    
+    // Load saved settings
+    function loadSavedSettings() {
+      const savedMessage = localStorage.getItem('customMessage');
+      const savedVerse = localStorage.getItem('customVerse');
+      const savedFontSize = localStorage.getItem('fontSize');
+      const savedPopupActive = localStorage.getItem('popupActive');
+      const savedPopupMinutes = localStorage.getItem('popupMinutes');
+      
+      if (savedMessage) {
+        customMessage = savedMessage;
+        customMessageInput.value = savedMessage;
+      }
+      if (savedVerse) {
+        customVerse = savedVerse;
+        customVerseInput.value = savedVerse;
+      }
+      if (savedFontSize) {
+        fontSize = parseInt(savedFontSize);
+        fontSizeSlider.value = fontSize;
+        applyFontSize();
+      }
+      
+      refreshDisplay();
+      
+      // Restore popup if it was active
+      if (savedPopupActive === 'true' && savedPopupMinutes) {
+        setTimeout(() => {
+          startPopup(parseInt(savedPopupMinutes));
+          startPopupBtn.textContent = '🛑 Stop Auto Popup';
+          startPopupBtn.style.backgroundColor = '#dc2626';
+        }, 1000);
+      }
+    }
+
+    // Auto-refresh display every hour (in case custom messages changed elsewhere)
     setInterval(() => {
-      // Re-read custom inputs in case they changed
-      customMessage = customMessageInput.value;
-      customVerse = customVerseInput.value;
       refreshDisplay();
     }, 60 * 60 * 1000);
 
     // Event listeners
     updateBtn.addEventListener('click', handleUpdate);
     fontSizeSlider.addEventListener('input', handleFontSizeChange);
+    startPopupBtn.addEventListener('click', handleStartPopup);
 
     // Initial display
     refreshDisplay();
     applyFontSize();
+    loadSavedSettings();
 
     // ---------- PWA: Install prompt ----------
     let deferredPrompt = null;
@@ -260,7 +507,7 @@
       deferredPrompt = null;
     });
 
-    // ---------- Simple service worker for offline (if served over HTTP) ----------
+    // ---------- Service worker for offline ----------
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       window.addEventListener('load', () => {
         const swCode = `const CACHE_NAME = 'hope-v1';
