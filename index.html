@@ -4,21 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#3b82f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Daily Hope">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E">
+  
+  <!-- Web App Manifest -->
   <link rel="manifest" href="data:application/manifest+json,{
     %22name%22:%22Daily%20Hope%22,
     %22short_name%22:%22Hope%22,
-    %22description%22:%22Daily%20hope%20messages%22,
+    %22description%22:%22Daily%20hope%20messages%20with%20home%20screen%20badges%22,
     %22start_url%22:%22/%22,
     %22display%22:%22standalone%22,
     %22theme_color%22:%22%233b82f6%22,
     %22background_color%22:%22%23ffffff%22,
     %22icons%22:[
-      { %22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E%22, %22sizes%22:%22any%22, %22type%22:%22image/svg+xml%22 }
+      {
+        %22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E%22,
+        %22sizes%22:%22any%22,
+        %22type%22:%22image/svg+xml%22,
+        %22purpose%22:%22any%22
+      }
     ]
   }">
-  <title>Daily Hope – Home Screen Badge</title>
+  
+  <title>Daily Hope – Installable App</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
@@ -41,29 +57,138 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    h1 { font-size: 1.875rem; font-weight: bold; text-align: center; color: #1f2937; margin-bottom: 1.5rem; }
-    .hope-message { font-weight: 500; color: #374151; line-height: 1.5; font-size: 1.25rem; text-align: center; margin-bottom: 1rem; }
-    .verse-box { background: #f9fafb; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.25rem; margin-top: 1rem; }
-    .verse-text { font-style: italic; color: #4b5563; text-align: center; }
-    .controls { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-    input, button, select { width: 100%; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid #d1d5db; font-size: 1rem; outline: none; }
-    button { background-color: #2563eb; color: white; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s; }
-    button:hover { background-color: #1d4ed8; }
-    .badge-btn { background-color: #16a34a; }
-    .badge-btn:hover { background-color: #15803d; }
-    .slider-label { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; display: block; }
-    input[type="range"] { padding: 0; }
-    .install-btn { position: fixed; bottom: 1.5rem; right: 1.5rem; background-color: #0891b2; color: white; padding: 0.75rem 1.25rem; border-radius: 9999px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: none; font-weight: 600; cursor: pointer; width: auto; z-index: 50; }
-    .flex-row { display: flex; gap: 0.5rem; }
-    .flex-row select, .flex-row button { flex: 1; }
-    .status { font-size: 0.875rem; text-align: center; color: #4b5563; margin-top: 0.5rem; padding: 0.5rem; background: #f3f4f6; border-radius: 0.5rem; }
-    .badge-preview { display: inline-block; background: #ef4444; color: white; border-radius: 9999px; padding: 0.125rem 0.5rem; font-size: 0.75rem; font-weight: bold; margin-left: 0.5rem; }
-    @media (max-width: 640px) { .card { padding: 1rem; } h1 { font-size: 1.5rem; } }
+    h1 {
+      font-size: 1.875rem;
+      font-weight: bold;
+      text-align: center;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .hope-message {
+      font-weight: 500;
+      color: #374151;
+      line-height: 1.5;
+      font-size: 1.25rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .verse-box {
+      background: #f9fafb;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    .verse-text {
+      font-style: italic;
+      color: #4b5563;
+      text-align: center;
+    }
+    .controls {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input, button, select {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.75rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: #3b82f6;
+      ring: 2px solid #3b82f6;
+    }
+    button {
+      background-color: #2563eb;
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+      transform: scale(0.98);
+    }
+    .badge-btn {
+      background-color: #16a34a;
+    }
+    .badge-btn:hover {
+      background-color: #15803d;
+    }
+    .install-btn {
+      background-color: #0891b2;
+    }
+    .install-btn:hover {
+      background-color: #0e7490;
+    }
+    .slider-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+    input[type="range"] {
+      padding: 0;
+    }
+    .flex-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .flex-row select, .flex-row button {
+      flex: 1;
+    }
+    .status {
+      font-size: 0.875rem;
+      text-align: center;
+      color: #4b5563;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #f3f4f6;
+      border-radius: 0.5rem;
+    }
+    .badge-preview {
+      display: inline-block;
+      background: #ef4444;
+      color: white;
+      border-radius: 9999px;
+      padding: 0.125rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .installed-badge {
+      background: #22c55e;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      margin-left: 0.5rem;
+    }
+    hr {
+      margin: 0.5rem 0;
+      border-color: #e5e7eb;
+    }
+    @media (max-width: 640px) {
+      .card { padding: 1rem; }
+      h1 { font-size: 1.5rem; }
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>💙 Daily Hope <span id="badgeIndicator" style="display:none;" class="badge-preview">!</span></h1>
+    <h1>
+      💙 Daily Hope
+      <span id="badgeIndicator" style="display:none;" class="badge-preview">!</span>
+      <span id="installedIndicator" style="display:none;" class="installed-badge">✓ Installed</span>
+    </h1>
     
     <div class="hope-message" id="hopeMessage">Loading...</div>
     <div class="verse-box">
@@ -71,53 +196,62 @@
     </div>
     
     <div class="controls">
-      <input type="text" id="customMessageInput" placeholder="Write your own hope message">
-      <input type="text" id="customVerseInput" placeholder="Write your own comforting verse">
+      <input type="text" id="customMessageInput" placeholder="✏️ Write your own hope message">
+      <input type="text" id="customVerseInput" placeholder="✏️ Write your own comforting verse">
       <div>
-        <label class="slider-label">Text size: <span id="sizeValue">22</span>px</label>
+        <label class="slider-label">🔤 Text size: <span id="sizeValue">22</span>px</label>
         <input type="range" id="fontSizeSlider" min="16" max="40" value="22">
       </div>
-      <button id="updateBtn">Update Message</button>
+      <button id="updateBtn">🔄 Update Message</button>
       
       <hr>
       <div class="flex-row">
         <select id="badgeInterval">
-          <option value="30">Every 30 minutes</option>
-          <option value="60">Every 1 hour</option>
+          <option value="30">⏰ Every 30 minutes</option>
+          <option value="60">⏰ Every 1 hour</option>
         </select>
         <button id="startBadgeBtn" class="badge-btn">🔔 Show Badge on Home Screen</button>
       </div>
       <div id="badgeStatus" class="status">
-        💡 Click "Show Badge on Home Screen" - the app icon will get a red badge!
+        💡 First, click "📲 Install App" below → then click "Show Badge"!
       </div>
     </div>
   </div>
-  <button id="installBtn" class="install-btn" style="display: none;">📲 Install App First!</button>
+  <button id="installBtn" class="install-btn" style="position: fixed; bottom: 1.5rem; right: 1.5rem; width: auto; padding: 0.75rem 1.25rem; border-radius: 9999px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 50;">
+    📲 Install App
+  </button>
 
   <script>
-    // Data
+    // ========== DATA ==========
     const defaultMessages = [
-      "Keep going — brighter days are ahead.",
-      "You are stronger than this moment.",
-      "Peace will find you again.",
-      "Every storm runs out of rain.",
-      "Small steps still move you forward.",
-      "Your story is not over yet.",
-      "Grace will carry you through.",
-      "Hope grows even in quiet places."
+      "✨ Keep going — brighter days are ahead.",
+      "💪 You are stronger than this moment.",
+      "🕊️ Peace will find you again.",
+      "🌧️ Every storm runs out of rain.",
+      "👣 Small steps still move you forward.",
+      "📖 Your story is not over yet.",
+      "🙏 Grace will carry you through.",
+      "🌱 Hope grows even in quiet places.",
+      "🌟 You are loved more than you know.",
+      "💖 This too shall pass."
     ];
+    
     const defaultVerses = [
       "Psalm 46:1 — God is our refuge and strength",
       "Isaiah 41:10 — Do not fear, for I am with you",
       "Jeremiah 29:11 — For I know the plans I have for you",
       "Matthew 11:28 — Come to me, all who are weary",
       "Romans 15:13 — May the God of hope fill you with joy",
-      "Philippians 4:13 — I can do all things through Christ"
+      "Philippians 4:13 — I can do all things through Christ",
+      "Psalm 34:18 — The Lord is close to the brokenhearted",
+      "John 14:27 — Peace I leave with you"
     ];
 
-    function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function randomItem(arr) { 
+      return arr[Math.floor(Math.random() * arr.length)]; 
+    }
 
-    // DOM elements
+    // ========== DOM ELEMENTS ==========
     const hopeMessageEl = document.getElementById('hopeMessage');
     const verseTextEl = document.getElementById('verseText');
     const customMessageInput = document.getElementById('customMessageInput');
@@ -130,14 +264,17 @@
     const badgeIntervalSelect = document.getElementById('badgeInterval');
     const badgeStatus = document.getElementById('badgeStatus');
     const badgeIndicator = document.getElementById('badgeIndicator');
+    const installedIndicator = document.getElementById('installedIndicator');
 
-    // State
+    // ========== STATE ==========
     let customMessage = '';
     let customVerse = '';
     let fontSize = 22;
     let badgeTimer = null;
     let badgeActive = false;
+    let isAppInstalled = false;
 
+    // ========== CORE FUNCTIONS ==========
     function getCurrentMessage() {
       return customMessage.trim() !== '' ? customMessage : randomItem(defaultMessages);
     }
@@ -163,38 +300,46 @@
       refreshDisplay();
       localStorage.setItem('customMessage', customMessage);
       localStorage.setItem('customVerse', customVerse);
+      if (badgeActive) {
+        badgeStatus.innerHTML = `✅ Message updated! New message will appear on next badge.`;
+      }
     }
 
-    // --- HOME SCREEN BADGE (shows on app icon) ---
+    function handleFontSizeChange(e) {
+      fontSize = Number(e.target.value);
+      applyFontSize();
+      localStorage.setItem('fontSize', fontSize);
+    }
+
+    // ========== HOME SCREEN BADGE (shows on app icon!) ==========
     function updateBadge(count) {
-      // Try modern badge API (supported on Android Chrome when installed)
+      // Try modern badge API (works on Android Chrome when installed)
       if (navigator.setAppBadge) {
         if (count > 0) {
-          navigator.setAppBadge(count).catch(err => console.log('Badge not supported'));
+          navigator.setAppBadge(count).catch(err => {
+            console.log('Badge API not supported');
+            showFallbackBadge(count);
+          });
           badgeIndicator.style.display = 'inline-block';
-          badgeIndicator.textContent = count;
+          badgeIndicator.textContent = count > 9 ? '9+' : count;
         } else {
           navigator.clearAppBadge().catch(err => console.log('Cannot clear badge'));
           badgeIndicator.style.display = 'none';
         }
       } else {
-        // Fallback: show indicator in app title
-        if (count > 0) {
-          badgeIndicator.style.display = 'inline-block';
-          badgeIndicator.textContent = '!';
-          document.title = `(📌) Daily Hope`;
-        } else {
-          badgeIndicator.style.display = 'none';
-          document.title = `Daily Hope`;
-        }
-        badgeStatus.innerHTML = `⚠️ Your browser doesn't support home screen badges fully. But you'll see a marker in the app!<br>For best results: Install the app first, then badges will appear on the home screen icon.`;
+        showFallbackBadge(count);
       }
-      
-      // Also update status message
+    }
+    
+    function showFallbackBadge(count) {
       if (count > 0) {
-        badgeStatus.innerHTML = `✅ ACTIVE! Your app icon will show a badge every ${badgeIntervalSelect.value} minutes.<br>📱 Tap the app icon to see your new hope message!`;
+        badgeIndicator.style.display = 'inline-block';
+        badgeIndicator.textContent = '📌';
+        document.title = `(🔔) Daily Hope`;
+        badgeStatus.innerHTML = `⚠️ For badges to appear on your HOME SCREEN ICON:<br>1️⃣ Make sure you installed the app (click "Install App")<br>2️⃣ On Android Chrome, badges work automatically!<br>3️⃣ On iOS, badges appear as notification badges.`;
       } else {
-        badgeStatus.innerHTML = `💡 Click "Show Badge on Home Screen" - the app icon will get a red badge! Then tap it to see your message.`;
+        badgeIndicator.style.display = 'none';
+        document.title = `Daily Hope`;
       }
     }
     
@@ -205,12 +350,17 @@
       // Also refresh the message so when they open the app, it's new
       refreshDisplay();
       
-      // Clear badge after 5 seconds (so next interval can show it again)
+      // Update status
+      const minutes = badgeIntervalSelect.value;
+      badgeStatus.innerHTML = `🔴 NEW MESSAGE READY! Check the red badge on your home screen icon!<br>Next badge in ${minutes} minutes. Tap the app icon to see your hope message. 💙`;
+      
+      // Clear badge after 10 seconds (so next interval can show it again)
       setTimeout(() => {
         if (badgeActive) {
           updateBadge(0);
+          badgeStatus.innerHTML = `✅ Badge active! Next one in ${minutes} minutes. The app icon will show a red badge. Tap it to see your hope message! 📱`;
         }
-      }, 5000);
+      }, 10000);
     }
     
     function startBadge(minutes) {
@@ -230,6 +380,7 @@
       
       startBadgeBtn.textContent = '🛑 Stop Badge';
       startBadgeBtn.style.backgroundColor = '#dc2626';
+      badgeStatus.innerHTML = `✅ ACTIVE! Your app icon will show a red badge every ${minutes} minutes.<br>📱 Tap the app icon to see your fresh hope message!`;
     }
     
     function stopBadge() {
@@ -243,10 +394,15 @@
       
       startBadgeBtn.textContent = '🔔 Show Badge on Home Screen';
       startBadgeBtn.style.backgroundColor = '#16a34a';
-      badgeStatus.innerHTML = `⏸️ Badge stopped. Click "Show Badge" to restart.`;
+      badgeStatus.innerHTML = `⏸️ Badge stopped. Click "Show Badge" to restart and get reminders on your home screen icon.`;
     }
     
     function handleStartBadge() {
+      if (!isAppInstalled) {
+        badgeStatus.innerHTML = `⚠️ Please install the app first! Click the blue "Install App" button below, then try again. 🚀`;
+        return;
+      }
+      
       if (badgeActive) {
         stopBadge();
       } else {
@@ -255,7 +411,28 @@
       }
     }
     
-    // Load saved settings
+    // ========== CHECK IF APP IS INSTALLED ==========
+    function checkIfInstalled() {
+      // Check if running in standalone mode (installed PWA)
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                          window.navigator.standalone === true;
+      
+      if (isStandalone) {
+        isAppInstalled = true;
+        installedIndicator.style.display = 'inline-block';
+        badgeStatus.innerHTML = `🎉 App is INSTALLED on your home screen!<br>Now click "Show Badge" - you'll see red badges on the app icon every 30 minutes! 📱`;
+      }
+    }
+    
+    // Listen for display mode changes
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
+      if (e.matches) {
+        isAppInstalled = true;
+        installedIndicator.style.display = 'inline-block';
+      }
+    });
+    
+    // ========== LOAD SAVED SETTINGS ==========
     function loadSavedSettings() {
       const savedMessage = localStorage.getItem('customMessage');
       const savedVerse = localStorage.getItem('customVerse');
@@ -279,66 +456,67 @@
       
       refreshDisplay();
       
-      if (savedBadgeActive === 'true' && savedBadgeMinutes) {
+      // Only auto-start badge if app is installed
+      if (savedBadgeActive === 'true' && savedBadgeMinutes && isAppInstalled) {
         setTimeout(() => {
           startBadge(parseInt(savedBadgeMinutes));
         }, 1000);
       }
     }
 
-    // Auto-refresh
+    // ========== AUTO-REFRESH EVERY HOUR ==========
     setInterval(() => refreshDisplay(), 60 * 60 * 1000);
 
-    // Event listeners
+    // ========== EVENT LISTENERS ==========
     updateBtn.addEventListener('click', handleUpdate);
     fontSizeSlider.addEventListener('input', handleFontSizeChange);
     startBadgeBtn.addEventListener('click', handleStartBadge);
-    
-    function handleFontSizeChange(e) {
-      fontSize = Number(e.target.value);
-      applyFontSize();
-      localStorage.setItem('fontSize', fontSize);
-    }
 
-    // Initial load
-    refreshDisplay();
-    applyFontSize();
-    loadSavedSettings();
-
-    // PWA Install prompt
+    // ========== PWA INSTALL PROMPT ==========
     let deferredPrompt = null;
+    
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       installBtn.style.display = 'block';
-      badgeStatus.innerHTML = `✅ First, click "Install App First!" to add to home screen. THEN click "Show Badge" - the red badge will appear on the app icon! 📱`;
+      installBtn.classList.add('install-btn');
+      badgeStatus.innerHTML = `✅ Click "Install App" to add Daily Hope to your home screen! Then you'll get badges on the icon. 🏠`;
     });
-
+    
     installBtn.addEventListener('click', async () => {
       if (!deferredPrompt) return;
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
         installBtn.style.display = 'none';
-        badgeStatus.innerHTML = `🎉 App installed to home screen! Now click "Show Badge on Home Screen" - you'll see a red badge on the app icon every 30 minutes!`;
+        isAppInstalled = true;
+        installedIndicator.style.display = 'inline-block';
+        badgeStatus.innerHTML = `🎉 PERFECT! App installed to home screen!<br>Now click "Show Badge" - you'll see red 🔴 badges on the app icon every 30 minutes!`;
       }
       deferredPrompt = null;
     });
 
-    // Service worker for offline
+    // ========== SERVICE WORKER FOR OFFLINE ==========
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       window.addEventListener('load', () => {
-        const swCode = `const CACHE_NAME = 'hope-v1';
+        const swCode = `const CACHE_NAME = 'hope-v2';
 const urlsToCache = ['/', '/index.html'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))));
 self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
         const blob = new Blob([swCode], {type: 'application/javascript'});
         const url = URL.createObjectURL(blob);
         navigator.serviceWorker.register(url).then(reg => {
+          console.log('Service worker registered');
           URL.revokeObjectURL(url);
         }).catch(() => {});
       });
     }
+
+    // ========== INITIALIZE ==========
+    refreshDisplay();
+    applyFontSize();
+    checkIfInstalled();
+    loadSavedSettings();
   </script>
 </body>
 </html>
