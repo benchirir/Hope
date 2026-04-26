@@ -1,80 +1,176 @@
-import React, { useState, useEffect } from "react"; import { motion } from "framer-motion"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Input } from "@/components/ui/input";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="manifest" href="data:application/manifest+json,{
+    %22name%22:%22Daily%20Hope%22,
+    %22short_name%22:%22Hope%22,
+    %22description%22:%22Daily%20hope%20messages%20and%20comforting%20verses%22,
+    %22start_url%22:%22/%22,
+    %22display%22:%22standalone%22,
+    %22theme_color%22:%22%23ffffff%22,
+    %22background_color%22:%22%23ffffff%22,
+    %22icons%22:[
+      { %22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E%22, %22sizes%22:%22any%22, %22type%22:%22image/svg+xml%22 }
+    ]
+  }">
+  <title>Daily Hope – Installable App</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Framer Motion & React from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
+  <style>
+    /* fallback for motion */
+    body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    // Simple service worker registration (optional, for offline caching)
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      window.addEventListener('load', () => {
+        // Create a minimal service worker that caches shell and shows offline page
+        const swCode = `const CACHE_NAME = 'hope-v1';
+const urls = ['/', '/index.html'];
+self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urls))));
+self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
+        const blob = new Blob([swCode], {type: 'application/javascript'});
+        const url = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(url).then(reg => {
+          console.log('SW registered', reg);
+          URL.revokeObjectURL(url);
+        }).catch(err => console.log('SW failed', err));
+      });
+    }
 
-const defaultMessages = [ "Keep going — brighter days are ahead.", "You are stronger than this moment.", "Peace will find you again.", "Every storm runs out of rain.", "Small steps still move you forward.", "Your story is not over yet.", "Grace will carry you through.", "Hope grows even in quiet places." ];
+    // Polyfill for React & Framer Motion (using global variables)
+    const { useState, useEffect } = React;
+    const { motion } = FramerMotion;
 
-const defaultVerses = [ "Psalm 46:1 — God is our refuge and strength, an ever-present help in trouble.", "Isaiah 41:10 — Do not fear, for I am with you.", "Jeremiah 29:11 — For I know the plans I have for you.", "Matthew 11:28 — Come to me, all who are weary.", "Romans 15:13 — May the God of hope fill you with joy and peace.", "Philippians 4:13 — I can do all things through Christ who strengthens me." ];
+    // Data
+    const defaultMessages = [
+      "Keep going — brighter days are ahead.",
+      "You are stronger than this moment.",
+      "Peace will find you again.",
+      "Every storm runs out of rain.",
+      "Small steps still move you forward.",
+      "Your story is not over yet.",
+      "Grace will carry you through.",
+      "Hope grows even in quiet places."
+    ];
+    const defaultVerses = [
+      "Psalm 46:1 — God is our refuge and strength, an ever-present help in trouble.",
+      "Isaiah 41:10 — Do not fear, for I am with you.",
+      "Jeremiah 29:11 — For I know the plans I have for you.",
+      "Matthew 11:28 — Come to me, all who are weary.",
+      "Romans 15:13 — May the God of hope fill you with joy and peace.",
+      "Philippians 4:13 — I can do all things through Christ who strengthens me."
+    ];
+    const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
 
-function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    // Main component
+    const App = () => {
+      const [message, setMessage] = useState(randomItem(defaultMessages));
+      const [verse, setVerse] = useState(randomItem(defaultVerses));
+      const [customMessage, setCustomMessage] = useState('');
+      const [customVerse, setCustomVerse] = useState('');
+      const [fontSize, setFontSize] = useState(22);
+      const [deferredPrompt, setDeferredPrompt] = useState(null);
+      const [showInstall, setShowInstall] = useState(false);
 
-export default function HopeMessagesHomeApp() { const [message, setMessage] = useState(randomItem(defaultMessages)); const [verse, setVerse] = useState(randomItem(defaultVerses)); const [customMessage, setCustomMessage] = useState(""); const [customVerse, setCustomVerse] = useState(""); const [fontSize, setFontSize] = useState(22);
+      const refreshContent = () => {
+        setMessage(customMessage || randomItem(defaultMessages));
+        setVerse(customVerse || randomItem(defaultVerses));
+      };
 
-const refreshContent = () => { setMessage(customMessage || randomItem(defaultMessages)); setVerse(customVerse || randomItem(defaultVerses)); };
+      // Auto refresh every hour
+      useEffect(() => {
+        refreshContent();
+        const interval = setInterval(refreshContent, 60 * 60 * 1000);
+        return () => clearInterval(interval);
+      }, [customMessage, customVerse]);
 
-useEffect(() => { refreshContent();
+      // Install prompt
+      useEffect(() => {
+        const handler = (e) => {
+          e.preventDefault();
+          setDeferredPrompt(e);
+          setShowInstall(true);
+        };
+        window.addEventListener('beforeinstallprompt', handler);
+        return () => window.removeEventListener('beforeinstallprompt', handler);
+      }, []);
 
-const interval = setInterval(() => {
-  refreshContent();
-}, 60 * 60 * 1000); // every 1 hour
+      const handleInstall = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') setShowInstall(false);
+        setDeferredPrompt(null);
+      };
 
-return () => clearInterval(interval);
+      return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4" },
+        React.createElement(motion.div, {
+          initial: { opacity: 0, y: 20 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.6 },
+          className: "w-full max-w-2xl"
+        },
+          React.createElement('div', { className: "bg-white rounded-2xl shadow-xl p-6 space-y-6" },
+            React.createElement('h1', { className: "text-3xl font-bold text-center text-gray-800" }, "Daily Hope"),
+            React.createElement('div', { className: "text-center space-y-4" },
+              React.createElement('p', { className: "font-medium text-gray-700 leading-relaxed", style: { fontSize: `${fontSize}px` } }, message),
+              React.createElement('div', { className: "bg-gray-50 rounded-xl border p-5" },
+                React.createElement('p', { className: "italic text-gray-600", style: { fontSize: `${fontSize - 2}px` } }, verse)
+              )
+            ),
+            React.createElement('div', { className: "space-y-4" },
+              React.createElement('input', {
+                type: "text",
+                placeholder: "Write your own hope message",
+                value: customMessage,
+                onChange: e => setCustomMessage(e.target.value),
+                className: "w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+              }),
+              React.createElement('input', {
+                type: "text",
+                placeholder: "Write your own comforting verse",
+                value: customVerse,
+                onChange: e => setCustomVerse(e.target.value),
+                className: "w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+              }),
+              React.createElement('div', null,
+                React.createElement('label', { className: "block text-sm font-medium mb-1" }, `Text size: ${fontSize}px`),
+                React.createElement('input', {
+                  type: "range",
+                  min: "16",
+                  max: "40",
+                  value: fontSize,
+                  onChange: e => setFontSize(Number(e.target.value)),
+                  className: "w-full"
+                })
+              ),
+              React.createElement('button', {
+                onClick: refreshContent,
+                className: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition"
+              }, "Update Message")
+            )
+          )
+        ),
+        showInstall && React.createElement('button', {
+          onClick: handleInstall,
+          className: "fixed bottom-6 right-6 bg-green-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-green-700 transition z-50"
+        }, "📲 Install App")
+      );
+    };
 
-}, [customMessage, customVerse]);
-
-return ( <div className="min-h-screen bg-white p-6 flex items-center justify-center"> <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-2xl" > <Card className="rounded-2xl shadow-xl border-0"> <CardContent className="p-8 space-y-6 text-center"> <h1 className="text-3xl font-bold tracking-tight"> Daily Hope </h1>
-
-<p
-          className="leading-relaxed font-medium"
-          style={{ fontSize: `${fontSize}px` }}
-        >
-          {message}
-        </p>
-
-        <div className="rounded-2xl border p-5 bg-gray-50">
-          <p
-            className="leading-relaxed italic"
-            style={{ fontSize: `${fontSize - 2}px` }}
-          >
-            {verse}
-          </p>
-        </div>
-
-        <div className="space-y-4 text-left">
-          <Input
-            placeholder="Write your own hope message"
-            value={customMessage}
-            onChange={(e) => setCustomMessage(e.target.value)}
-          />
-
-          <Input
-            placeholder="Write your own comforting verse"
-            value={customVerse}
-            onChange={(e) => setCustomVerse(e.target.value)}
-          />
-
-          <div>
-            <label className="text-sm font-medium">
-              Adjust Text Size: {fontSize}px
-            </label>
-            <input
-              type="range"
-              min="16"
-              max="40"
-              value={fontSize}
-              onChange={(e) => setFontSize(Number(e.target.value))}
-              className="w-full"
-            />
-          </div>
-        </div>
-
-        <Button
-          onClick={refreshContent}
-          className="rounded-xl px-6 py-2 text-base"
-        >
-          Update Message
-        </Button>
-      </CardContent>
-    </Card>
-  </motion.div>
-</div>
-
-); }
+    // Render
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>
