@@ -19,38 +19,52 @@
   <title>Daily Hope – Installable App</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Framer Motion & React from CDN -->
+  <!-- React 18 from CDN (using production versions for reliability) -->
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
   <style>
-    /* fallback for motion */
-    body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    /* Simple fade-in animation (replaces framer-motion) */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .fade-in-up {
+      animation: fadeInUp 0.6s ease-out;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script>
-    // Simple service worker registration (optional, for offline caching)
+    // Service worker for offline caching (works only over HTTP/HTTPS)
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       window.addEventListener('load', () => {
-        // Create a minimal service worker that caches shell and shows offline page
         const swCode = `const CACHE_NAME = 'hope-v1';
-const urls = ['/', '/index.html'];
-self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urls))));
+const urlsToCache = ['/', '/index.html'];
+self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))));
 self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
         const blob = new Blob([swCode], {type: 'application/javascript'});
         const url = URL.createObjectURL(blob);
         navigator.serviceWorker.register(url).then(reg => {
           console.log('SW registered', reg);
           URL.revokeObjectURL(url);
-        }).catch(err => console.log('SW failed', err));
+        }).catch(err => console.log('SW registration failed', err));
       });
     }
 
-    // Polyfill for React & Framer Motion (using global variables)
+    // Get React from global
     const { useState, useEffect } = React;
-    const { motion } = FramerMotion;
+    const ReactDOM = ReactDOM;
 
     // Data
     const defaultMessages = [
@@ -84,8 +98,8 @@ self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r
       const [showInstall, setShowInstall] = useState(false);
 
       const refreshContent = () => {
-        setMessage(customMessage || randomItem(defaultMessages));
-        setVerse(customVerse || randomItem(defaultVerses));
+        setMessage(customMessage.trim() || randomItem(defaultMessages));
+        setVerse(customVerse.trim() || randomItem(defaultVerses));
       };
 
       // Auto refresh every hour
@@ -114,13 +128,9 @@ self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r
         setDeferredPrompt(null);
       };
 
+      // Using React.createElement for brevity (no JSX)
       return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4" },
-        React.createElement(motion.div, {
-          initial: { opacity: 0, y: 20 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.6 },
-          className: "w-full max-w-2xl"
-        },
+        React.createElement('div', { className: "w-full max-w-2xl fade-in-up" },
           React.createElement('div', { className: "bg-white rounded-2xl shadow-xl p-6 space-y-6" },
             React.createElement('h1', { className: "text-3xl font-bold text-center text-gray-800" }, "Daily Hope"),
             React.createElement('div', { className: "text-center space-y-4" },
@@ -169,8 +179,10 @@ self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r
       );
     };
 
-    // Render
-    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+    // Render using React 18's createRoot
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(React.createElement(App));
   </script>
 </body>
 </html>
