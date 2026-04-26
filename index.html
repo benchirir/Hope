@@ -1,0 +1,80 @@
+import React, { useState, useEffect } from "react"; import { motion } from "framer-motion"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Input } from "@/components/ui/input";
+
+const defaultMessages = [ "Keep going — brighter days are ahead.", "You are stronger than this moment.", "Peace will find you again.", "Every storm runs out of rain.", "Small steps still move you forward.", "Your story is not over yet.", "Grace will carry you through.", "Hope grows even in quiet places." ];
+
+const defaultVerses = [ "Psalm 46:1 — God is our refuge and strength, an ever-present help in trouble.", "Isaiah 41:10 — Do not fear, for I am with you.", "Jeremiah 29:11 — For I know the plans I have for you.", "Matthew 11:28 — Come to me, all who are weary.", "Romans 15:13 — May the God of hope fill you with joy and peace.", "Philippians 4:13 — I can do all things through Christ who strengthens me." ];
+
+function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+export default function HopeMessagesHomeApp() { const [message, setMessage] = useState(randomItem(defaultMessages)); const [verse, setVerse] = useState(randomItem(defaultVerses)); const [customMessage, setCustomMessage] = useState(""); const [customVerse, setCustomVerse] = useState(""); const [fontSize, setFontSize] = useState(22);
+
+const refreshContent = () => { setMessage(customMessage || randomItem(defaultMessages)); setVerse(customVerse || randomItem(defaultVerses)); };
+
+useEffect(() => { refreshContent();
+
+const interval = setInterval(() => {
+  refreshContent();
+}, 60 * 60 * 1000); // every 1 hour
+
+return () => clearInterval(interval);
+
+}, [customMessage, customVerse]);
+
+return ( <div className="min-h-screen bg-white p-6 flex items-center justify-center"> <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-2xl" > <Card className="rounded-2xl shadow-xl border-0"> <CardContent className="p-8 space-y-6 text-center"> <h1 className="text-3xl font-bold tracking-tight"> Daily Hope </h1>
+
+<p
+          className="leading-relaxed font-medium"
+          style={{ fontSize: `${fontSize}px` }}
+        >
+          {message}
+        </p>
+
+        <div className="rounded-2xl border p-5 bg-gray-50">
+          <p
+            className="leading-relaxed italic"
+            style={{ fontSize: `${fontSize - 2}px` }}
+          >
+            {verse}
+          </p>
+        </div>
+
+        <div className="space-y-4 text-left">
+          <Input
+            placeholder="Write your own hope message"
+            value={customMessage}
+            onChange={(e) => setCustomMessage(e.target.value)}
+          />
+
+          <Input
+            placeholder="Write your own comforting verse"
+            value={customVerse}
+            onChange={(e) => setCustomVerse(e.target.value)}
+          />
+
+          <div>
+            <label className="text-sm font-medium">
+              Adjust Text Size: {fontSize}px
+            </label>
+            <input
+              type="range"
+              min="16"
+              max="40"
+              value={fontSize}
+              onChange={(e) => setFontSize(Number(e.target.value))}
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        <Button
+          onClick={refreshContent}
+          className="rounded-xl px-6 py-2 text-base"
+        >
+          Update Message
+        </Button>
+      </CardContent>
+    </Card>
+  </motion.div>
+</div>
+
+); }
