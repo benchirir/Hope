@@ -7,28 +7,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Daily Hope">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="https://emojicdn.elk.sh/❤️?size=256">
   
   <!-- Web App Manifest -->
-  <link rel="manifest" href="data:application/manifest+json,{
-    %22name%22:%22Daily%20Hope%22,
-    %22short_name%22:%22Hope%22,
-    %22description%22:%22Daily%20hope%20messages%20with%20home%20screen%20badges%22,
-    %22start_url%22:%22/%22,
-    %22display%22:%22standalone%22,
-    %22theme_color%22:%22%233b82f6%22,
-    %22background_color%22:%22%23ffffff%22,
-    %22icons%22:[
-      {
-        %22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E%22,
-        %22sizes%22:%22any%22,
-        %22type%22:%22image/svg+xml%22,
-        %22purpose%22:%22any%22
-      }
-    ]
-  }">
+  <link rel="manifest" href="manifest.json">
   
   <title>Daily Hope – Installable App</title>
+  
   <style>
     * {
       margin: 0;
@@ -67,6 +54,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
     .hope-message {
       font-weight: 500;
@@ -75,6 +63,9 @@
       font-size: 1.25rem;
       text-align: center;
       margin-bottom: 1rem;
+      padding: 1rem;
+      background: #fef3c7;
+      border-radius: 1rem;
     }
     .verse-box {
       background: #f9fafb;
@@ -104,7 +95,7 @@
     }
     input:focus, select:focus {
       border-color: #3b82f6;
-      ring: 2px solid #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
     }
     button {
       background-color: #2563eb;
@@ -125,10 +116,10 @@
       background-color: #15803d;
     }
     .install-btn {
-      background-color: #0891b2;
+      background: linear-gradient(135deg, #0891b2, #06b6d4);
     }
     .install-btn:hover {
-      background-color: #0e7490;
+      background: linear-gradient(135deg, #0e7490, #0891b2);
     }
     .slider-label {
       font-size: 0.875rem;
@@ -170,15 +161,30 @@
       padding: 0.25rem 0.75rem;
       border-radius: 9999px;
       font-size: 0.75rem;
-      margin-left: 0.5rem;
     }
     hr {
       margin: 0.5rem 0;
       border-color: #e5e7eb;
     }
+    .bottom-buttons {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 50;
+    }
+    .bottom-buttons button {
+      width: auto;
+      padding: 0.75rem 1.25rem;
+      border-radius: 9999px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
     @media (max-width: 640px) {
       .card { padding: 1rem; }
       h1 { font-size: 1.5rem; }
+      .bottom-buttons { bottom: 1rem; right: 1rem; }
+      .bottom-buttons button { padding: 0.5rem 1rem; font-size: 0.875rem; }
     }
   </style>
 </head>
@@ -213,15 +219,67 @@
         <button id="startBadgeBtn" class="badge-btn">🔔 Show Badge on Home Screen</button>
       </div>
       <div id="badgeStatus" class="status">
-        💡 First, click "📲 Install App" below → then click "Show Badge"!
+        💡 Click "📲 Install App" below → then click "Show Badge"!
       </div>
     </div>
   </div>
-  <button id="installBtn" class="install-btn" style="position: fixed; bottom: 1.5rem; right: 1.5rem; width: auto; padding: 0.75rem 1.25rem; border-radius: 9999px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 50;">
-    📲 Install App
-  </button>
+  
+  <div class="bottom-buttons">
+    <button id="installBtn" class="install-btn">📲 Install App</button>
+  </div>
 
   <script>
+    // Create manifest.json dynamically
+    const manifestData = {
+      name: "Daily Hope",
+      short_name: "Hope",
+      description: "Daily hope messages with home screen badges",
+      start_url: "/",
+      display: "standalone",
+      theme_color: "#3b82f6",
+      background_color: "#ffffff",
+      icons: [
+        {
+          src: "https://emojicdn.elk.sh/❤️?size=72",
+          sizes: "72x72",
+          type: "image/png"
+        },
+        {
+          src: "https://emojicdn.elk.sh/❤️?size=96",
+          sizes: "96x96",
+          type: "image/png"
+        },
+        {
+          src: "https://emojicdn.elk.sh/❤️?size=128",
+          sizes: "128x128",
+          type: "image/png"
+        },
+        {
+          src: "https://emojicdn.elk.sh/❤️?size=144",
+          sizes: "144x144",
+          type: "image/png"
+        },
+        {
+          src: "https://emojicdn.elk.sh/❤️?size=192",
+          sizes: "192x192",
+          type: "image/png"
+        },
+        {
+          src: "https://emojicdn.elk.sh/❤️?size=512",
+          sizes: "512x512",
+          type: "image/png"
+        }
+      ]
+    };
+
+    // Create and inject manifest
+    const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) {
+      manifestLink.href = manifestURL;
+    }
+
     // ========== DATA ==========
     const defaultMessages = [
       "✨ Keep going — brighter days are ahead.",
@@ -233,7 +291,9 @@
       "🙏 Grace will carry you through.",
       "🌱 Hope grows even in quiet places.",
       "🌟 You are loved more than you know.",
-      "💖 This too shall pass."
+      "💖 This too shall pass.",
+      "🌈 A new day brings new mercies.",
+      "⭐ You are not alone in this journey."
     ];
     
     const defaultVerses = [
@@ -273,6 +333,7 @@
     let badgeTimer = null;
     let badgeActive = false;
     let isAppInstalled = false;
+    let deferredPrompt = null;
 
     // ========== CORE FUNCTIONS ==========
     function getCurrentMessage() {
@@ -311,15 +372,11 @@
       localStorage.setItem('fontSize', fontSize);
     }
 
-    // ========== HOME SCREEN BADGE (shows on app icon!) ==========
+    // ========== HOME SCREEN BADGE ==========
     function updateBadge(count) {
-      // Try modern badge API (works on Android Chrome when installed)
       if (navigator.setAppBadge) {
         if (count > 0) {
-          navigator.setAppBadge(count).catch(err => {
-            console.log('Badge API not supported');
-            showFallbackBadge(count);
-          });
+          navigator.setAppBadge(count).catch(err => console.log('Badge API not supported'));
           badgeIndicator.style.display = 'inline-block';
           badgeIndicator.textContent = count > 9 ? '9+' : count;
         } else {
@@ -327,49 +384,36 @@
           badgeIndicator.style.display = 'none';
         }
       } else {
-        showFallbackBadge(count);
-      }
-    }
-    
-    function showFallbackBadge(count) {
-      if (count > 0) {
-        badgeIndicator.style.display = 'inline-block';
-        badgeIndicator.textContent = '📌';
-        document.title = `(🔔) Daily Hope`;
-        badgeStatus.innerHTML = `⚠️ For badges to appear on your HOME SCREEN ICON:<br>1️⃣ Make sure you installed the app (click "Install App")<br>2️⃣ On Android Chrome, badges work automatically!<br>3️⃣ On iOS, badges appear as notification badges.`;
-      } else {
-        badgeIndicator.style.display = 'none';
-        document.title = `Daily Hope`;
+        if (count > 0) {
+          badgeIndicator.style.display = 'inline-block';
+          badgeIndicator.textContent = '🔴';
+          document.title = `(🔔) Daily Hope`;
+        } else {
+          badgeIndicator.style.display = 'none';
+          document.title = `Daily Hope`;
+        }
       }
     }
     
     function triggerBadgeAndRefresh() {
-      // Show badge on home screen icon
       updateBadge(1);
-      
-      // Also refresh the message so when they open the app, it's new
       refreshDisplay();
       
-      // Update status
       const minutes = badgeIntervalSelect.value;
-      badgeStatus.innerHTML = `🔴 NEW MESSAGE READY! Check the red badge on your home screen icon!<br>Next badge in ${minutes} minutes. Tap the app icon to see your hope message. 💙`;
+      badgeStatus.innerHTML = `🔴 NEW MESSAGE! Check the badge on your home screen icon!<br>Next badge in ${minutes} minutes. Tap the icon to see your hope message. 💙`;
       
-      // Clear badge after 10 seconds (so next interval can show it again)
       setTimeout(() => {
         if (badgeActive) {
           updateBadge(0);
-          badgeStatus.innerHTML = `✅ Badge active! Next one in ${minutes} minutes. The app icon will show a red badge. Tap it to see your hope message! 📱`;
+          badgeStatus.innerHTML = `✅ Badge active! Next one in ${minutes} minutes. The app icon will show a badge. Tap it to see your hope message! 📱`;
         }
       }, 10000);
     }
     
     function startBadge(minutes) {
       if (badgeTimer) clearInterval(badgeTimer);
-      
-      // Trigger immediately to show it works
       triggerBadgeAndRefresh();
       
-      // Set interval
       badgeTimer = setInterval(() => {
         triggerBadgeAndRefresh();
       }, minutes * 60 * 1000);
@@ -380,7 +424,7 @@
       
       startBadgeBtn.textContent = '🛑 Stop Badge';
       startBadgeBtn.style.backgroundColor = '#dc2626';
-      badgeStatus.innerHTML = `✅ ACTIVE! Your app icon will show a red badge every ${minutes} minutes.<br>📱 Tap the app icon to see your fresh hope message!`;
+      badgeStatus.innerHTML = `✅ ACTIVE! Your app icon will show a badge every ${minutes} minutes.<br>📱 Tap the app icon to see your fresh hope message!`;
     }
     
     function stopBadge() {
@@ -394,7 +438,7 @@
       
       startBadgeBtn.textContent = '🔔 Show Badge on Home Screen';
       startBadgeBtn.style.backgroundColor = '#16a34a';
-      badgeStatus.innerHTML = `⏸️ Badge stopped. Click "Show Badge" to restart and get reminders on your home screen icon.`;
+      badgeStatus.innerHTML = `⏸️ Badge stopped. Click "Show Badge" to restart.`;
     }
     
     function handleStartBadge() {
@@ -413,18 +457,16 @@
     
     // ========== CHECK IF APP IS INSTALLED ==========
     function checkIfInstalled() {
-      // Check if running in standalone mode (installed PWA)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                           window.navigator.standalone === true;
       
       if (isStandalone) {
         isAppInstalled = true;
         installedIndicator.style.display = 'inline-block';
-        badgeStatus.innerHTML = `🎉 App is INSTALLED on your home screen!<br>Now click "Show Badge" - you'll see red badges on the app icon every 30 minutes! 📱`;
+        badgeStatus.innerHTML = `🎉 App is INSTALLED on your home screen!<br>Now click "Show Badge" - you'll see badges on the app icon every 30 minutes! 📱`;
       }
     }
     
-    // Listen for display mode changes
     window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
       if (e.matches) {
         isAppInstalled = true;
@@ -456,7 +498,6 @@
       
       refreshDisplay();
       
-      // Only auto-start badge if app is installed
       if (savedBadgeActive === 'true' && savedBadgeMinutes && isAppInstalled) {
         setTimeout(() => {
           startBadge(parseInt(savedBadgeMinutes));
@@ -464,7 +505,7 @@
       }
     }
 
-    // ========== AUTO-REFRESH EVERY HOUR ==========
+    // ========== AUTO-REFRESH ==========
     setInterval(() => refreshDisplay(), 60 * 60 * 1000);
 
     // ========== EVENT LISTENERS ==========
@@ -472,14 +513,11 @@
     fontSizeSlider.addEventListener('input', handleFontSizeChange);
     startBadgeBtn.addEventListener('click', handleStartBadge);
 
-    // ========== PWA INSTALL PROMPT ==========
-    let deferredPrompt = null;
-    
+    // ========== PWA INSTALL ==========
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       installBtn.style.display = 'block';
-      installBtn.classList.add('install-btn');
       badgeStatus.innerHTML = `✅ Click "Install App" to add Daily Hope to your home screen! Then you'll get badges on the icon. 🏠`;
     });
     
@@ -491,15 +529,15 @@
         installBtn.style.display = 'none';
         isAppInstalled = true;
         installedIndicator.style.display = 'inline-block';
-        badgeStatus.innerHTML = `🎉 PERFECT! App installed to home screen!<br>Now click "Show Badge" - you'll see red 🔴 badges on the app icon every 30 minutes!`;
+        badgeStatus.innerHTML = `🎉 PERFECT! App installed!<br>Now click "Show Badge" - you'll see red 🔴 badges on the app icon every 30 minutes!`;
       }
       deferredPrompt = null;
     });
 
-    // ========== SERVICE WORKER FOR OFFLINE ==========
+    // ========== SERVICE WORKER ==========
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       window.addEventListener('load', () => {
-        const swCode = `const CACHE_NAME = 'hope-v2';
+        const swCode = `const CACHE_NAME = 'hope-v3';
 const urlsToCache = ['/', '/index.html'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))));
 self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
