@@ -17,56 +17,147 @@
     ]
   }">
   <title>Daily Hope – Installable App</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React 18 from CDN (using production versions for reliability) -->
-  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
   <style>
-    /* Simple fade-in animation (replaces framer-motion) */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .fade-in-up {
-      animation: fadeInUp 0.6s ease-out;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     body {
-      margin: 0;
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .card {
+      max-width: 42rem;
+      width: 100%;
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+      font-size: 1.875rem;
+      font-weight: bold;
+      text-align: center;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+    }
+    .message-container {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .hope-message {
+      font-weight: 500;
+      color: #374151;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .verse-box {
+      background: #f9fafb;
+      border-radius: 0.75rem;
+      border: 1px solid #e5e7eb;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    .verse-text {
+      font-style: italic;
+      color: #4b5563;
+    }
+    .controls {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.75rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      outline: none;
+    }
+    input:focus {
+      border-color: #3b82f6;
+      ring: 2px solid #3b82f6;
+    }
+    button {
+      background-color: #2563eb;
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    .slider-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+    input[type="range"] {
+      padding: 0;
+    }
+    .install-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background-color: #16a34a;
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 9999px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      width: auto;
+      z-index: 50;
+    }
+    .install-btn:hover {
+      background-color: #15803d;
+    }
+    @media (max-width: 640px) {
+      .card { padding: 1rem; }
+      h1 { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div class="card" id="app">
+    <h1>Daily Hope</h1>
+    <div class="message-container">
+      <div class="hope-message" id="hopeMessage">Loading...</div>
+      <div class="verse-box">
+        <div class="verse-text" id="verseText">Loading...</div>
+      </div>
+    </div>
+    <div class="controls">
+      <input type="text" id="customMessageInput" placeholder="Write your own hope message">
+      <input type="text" id="customVerseInput" placeholder="Write your own comforting verse">
+      <div>
+        <label class="slider-label">Text size: <span id="sizeValue">22</span>px</label>
+        <input type="range" id="fontSizeSlider" min="16" max="40" value="22">
+      </div>
+      <button id="updateBtn">Update Message</button>
+    </div>
+  </div>
+  <button id="installBtn" class="install-btn" style="display: none;">📲 Install App</button>
+
   <script>
-    // Service worker for offline caching (works only over HTTP/HTTPS)
-    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-      window.addEventListener('load', () => {
-        const swCode = `const CACHE_NAME = 'hope-v1';
-const urlsToCache = ['/', '/index.html'];
-self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))));
-self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
-        const blob = new Blob([swCode], {type: 'application/javascript'});
-        const url = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(url).then(reg => {
-          console.log('SW registered', reg);
-          URL.revokeObjectURL(url);
-        }).catch(err => console.log('SW registration failed', err));
-      });
-    }
-
-    // Get React from global
-    const { useState, useEffect } = React;
-    const ReactDOM = ReactDOM;
-
-    // Data
+    // ---------- DATA ----------
     const defaultMessages = [
       "Keep going — brighter days are ahead.",
       "You are stronger than this moment.",
@@ -85,104 +176,105 @@ self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r
       "Romans 15:13 — May the God of hope fill you with joy and peace.",
       "Philippians 4:13 — I can do all things through Christ who strengthens me."
     ];
-    const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
 
-    // Main component
-    const App = () => {
-      const [message, setMessage] = useState(randomItem(defaultMessages));
-      const [verse, setVerse] = useState(randomItem(defaultVerses));
-      const [customMessage, setCustomMessage] = useState('');
-      const [customVerse, setCustomVerse] = useState('');
-      const [fontSize, setFontSize] = useState(22);
-      const [deferredPrompt, setDeferredPrompt] = useState(null);
-      const [showInstall, setShowInstall] = useState(false);
+    function randomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
 
-      const refreshContent = () => {
-        setMessage(customMessage.trim() || randomItem(defaultMessages));
-        setVerse(customVerse.trim() || randomItem(defaultVerses));
-      };
+    // DOM elements
+    const hopeMessageEl = document.getElementById('hopeMessage');
+    const verseTextEl = document.getElementById('verseText');
+    const customMessageInput = document.getElementById('customMessageInput');
+    const customVerseInput = document.getElementById('customVerseInput');
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const sizeValueSpan = document.getElementById('sizeValue');
+    const updateBtn = document.getElementById('updateBtn');
+    const installBtn = document.getElementById('installBtn');
 
-      // Auto refresh every hour
-      useEffect(() => {
-        refreshContent();
-        const interval = setInterval(refreshContent, 60 * 60 * 1000);
-        return () => clearInterval(interval);
-      }, [customMessage, customVerse]);
+    // State
+    let currentMessage = randomItem(defaultMessages);
+    let currentVerse = randomItem(defaultVerses);
+    let customMessage = '';
+    let customVerse = '';
+    let fontSize = 22;
 
-      // Install prompt
-      useEffect(() => {
-        const handler = (e) => {
-          e.preventDefault();
-          setDeferredPrompt(e);
-          setShowInstall(true);
-        };
-        window.addEventListener('beforeinstallprompt', handler);
-        return () => window.removeEventListener('beforeinstallprompt', handler);
-      }, []);
+    // Update UI
+    function refreshDisplay() {
+      // Use custom if provided, else random default
+      const msg = customMessage.trim() !== '' ? customMessage : randomItem(defaultMessages);
+      const ver = customVerse.trim() !== '' ? customVerse : randomItem(defaultVerses);
+      currentMessage = msg;
+      currentVerse = ver;
+      hopeMessageEl.textContent = currentMessage;
+      verseTextEl.textContent = currentVerse;
+    }
 
-      const handleInstall = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') setShowInstall(false);
-        setDeferredPrompt(null);
-      };
+    function applyFontSize() {
+      hopeMessageEl.style.fontSize = fontSize + 'px';
+      verseTextEl.style.fontSize = (fontSize - 2) + 'px';
+      sizeValueSpan.textContent = fontSize;
+    }
 
-      // Using React.createElement for brevity (no JSX)
-      return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4" },
-        React.createElement('div', { className: "w-full max-w-2xl fade-in-up" },
-          React.createElement('div', { className: "bg-white rounded-2xl shadow-xl p-6 space-y-6" },
-            React.createElement('h1', { className: "text-3xl font-bold text-center text-gray-800" }, "Daily Hope"),
-            React.createElement('div', { className: "text-center space-y-4" },
-              React.createElement('p', { className: "font-medium text-gray-700 leading-relaxed", style: { fontSize: `${fontSize}px` } }, message),
-              React.createElement('div', { className: "bg-gray-50 rounded-xl border p-5" },
-                React.createElement('p', { className: "italic text-gray-600", style: { fontSize: `${fontSize - 2}px` } }, verse)
-              )
-            ),
-            React.createElement('div', { className: "space-y-4" },
-              React.createElement('input', {
-                type: "text",
-                placeholder: "Write your own hope message",
-                value: customMessage,
-                onChange: e => setCustomMessage(e.target.value),
-                className: "w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-              }),
-              React.createElement('input', {
-                type: "text",
-                placeholder: "Write your own comforting verse",
-                value: customVerse,
-                onChange: e => setCustomVerse(e.target.value),
-                className: "w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-              }),
-              React.createElement('div', null,
-                React.createElement('label', { className: "block text-sm font-medium mb-1" }, `Text size: ${fontSize}px`),
-                React.createElement('input', {
-                  type: "range",
-                  min: "16",
-                  max: "40",
-                  value: fontSize,
-                  onChange: e => setFontSize(Number(e.target.value)),
-                  className: "w-full"
-                })
-              ),
-              React.createElement('button', {
-                onClick: refreshContent,
-                className: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition"
-              }, "Update Message")
-            )
-          )
-        ),
-        showInstall && React.createElement('button', {
-          onClick: handleInstall,
-          className: "fixed bottom-6 right-6 bg-green-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-green-700 transition z-50"
-        }, "📲 Install App")
-      );
-    };
+    function handleUpdate() {
+      customMessage = customMessageInput.value;
+      customVerse = customVerseInput.value;
+      refreshDisplay();
+    }
 
-    // Render using React 18's createRoot
-    const rootElement = document.getElementById('root');
-    const root = ReactDOM.createRoot(rootElement);
-    root.render(React.createElement(App));
+    function handleFontSizeChange(e) {
+      fontSize = Number(e.target.value);
+      applyFontSize();
+    }
+
+    // Auto-refresh every hour (keeps using current custom values)
+    setInterval(() => {
+      // Re-read custom inputs in case they changed
+      customMessage = customMessageInput.value;
+      customVerse = customVerseInput.value;
+      refreshDisplay();
+    }, 60 * 60 * 1000);
+
+    // Event listeners
+    updateBtn.addEventListener('click', handleUpdate);
+    fontSizeSlider.addEventListener('input', handleFontSizeChange);
+
+    // Initial display
+    refreshDisplay();
+    applyFontSize();
+
+    // ---------- PWA: Install prompt ----------
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        installBtn.style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+
+    // ---------- Simple service worker for offline (if served over HTTP) ----------
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      window.addEventListener('load', () => {
+        const swCode = `const CACHE_NAME = 'hope-v1';
+const urlsToCache = ['/', '/index.html'];
+self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))));
+self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
+        const blob = new Blob([swCode], {type: 'application/javascript'});
+        const url = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(url).then(reg => {
+          console.log('Service worker registered');
+          URL.revokeObjectURL(url);
+        }).catch(err => console.log('SW registration failed:', err));
+      });
+    }
   </script>
 </body>
 </html>
