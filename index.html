@@ -3,26 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#3b82f6">
   <link rel="manifest" href="data:application/manifest+json,{
     %22name%22:%22Daily%20Hope%22,
     %22short_name%22:%22Hope%22,
-    %22description%22:%22Daily%20hope%20messages%20and%20comforting%20verses%22,
+    %22description%22:%22Daily%20hope%20messages%22,
     %22start_url%22:%22/%22,
     %22display%22:%22standalone%22,
-    %22theme_color%22:%22%23ffffff%22,
+    %22theme_color%22:%22%233b82f6%22,
     %22background_color%22:%22%23ffffff%22,
     %22icons%22:[
       { %22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%233b82f6'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white'%3E❤%3C/text%3E%3C/svg%3E%22, %22sizes%22:%22any%22, %22type%22:%22image/svg+xml%22 }
     ]
   }">
-  <title>Daily Hope – Auto Popup</title>
+  <title>Daily Hope – Home Screen Badge</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
@@ -45,192 +41,35 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes popIn {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    h1 {
-      font-size: 1.875rem;
-      font-weight: bold;
-      text-align: center;
-      color: #1f2937;
-      margin-bottom: 1.5rem;
-    }
-    .message-container {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    .hope-message {
-      font-weight: 500;
-      color: #374151;
-      line-height: 1.5;
-      margin-bottom: 1rem;
-    }
-    .verse-box {
-      background: #f9fafb;
-      border-radius: 0.75rem;
-      border: 1px solid #e5e7eb;
-      padding: 1.25rem;
-      margin-top: 1rem;
-    }
-    .verse-text {
-      font-style: italic;
-      color: #4b5563;
-    }
-    .controls {
-      margin-top: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    input, button, select {
-      width: 100%;
-      padding: 0.75rem;
-      border-radius: 0.75rem;
-      border: 1px solid #d1d5db;
-      font-size: 1rem;
-      outline: none;
-    }
-    input:focus, select:focus {
-      border-color: #3b82f6;
-      ring: 2px solid #3b82f6;
-    }
-    button {
-      background-color: #2563eb;
-      color: white;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background-color: #1d4ed8;
-    }
-    .popup-btn {
-      background-color: #16a34a;
-    }
-    .popup-btn:hover {
-      background-color: #15803d;
-    }
-    .slider-label {
-      font-size: 0.875rem;
-      font-weight: 500;
-      margin-bottom: 0.25rem;
-      display: block;
-    }
-    input[type="range"] {
-      padding: 0;
-    }
-    .install-btn {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background-color: #0891b2;
-      color: white;
-      padding: 0.75rem 1.25rem;
-      border-radius: 9999px;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      width: auto;
-      z-index: 50;
-    }
-    .install-btn:hover {
-      background-color: #0e7490;
-    }
-    .flex-row {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .flex-row select, .flex-row button {
-      flex: 1;
-    }
-    .status {
-      font-size: 0.875rem;
-      text-align: center;
-      color: #4b5563;
-      margin-top: 0.5rem;
-      padding: 0.5rem;
-      background: #f3f4f6;
-      border-radius: 0.5rem;
-    }
-    .countdown {
-      font-weight: bold;
-      color: #2563eb;
-    }
-    @media (max-width: 640px) {
-      .card { padding: 1rem; }
-      h1 { font-size: 1.5rem; }
-    }
-    
-    /* Popup overlay styles */
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      animation: fadeInUp 0.3s ease-out;
-    }
-    .popup-card {
-      background: white;
-      border-radius: 2rem;
-      padding: 2rem;
-      max-width: 90%;
-      width: 400px;
-      text-align: center;
-      animation: popIn 0.4s ease-out;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-    }
-    .popup-card h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: #1f2937;
-    }
-    .popup-card p {
-      font-size: 1.125rem;
-      margin-bottom: 1.5rem;
-      color: #374151;
-      line-height: 1.5;
-    }
-    .popup-card button {
-      background: #2563eb;
-      padding: 0.75rem 1.5rem;
-      width: auto;
-      min-width: 120px;
-    }
-    .close-popup {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #9ca3af;
-      width: auto;
-      padding: 0.5rem;
-    }
-    .close-popup:hover {
-      color: #374151;
-    }
+    h1 { font-size: 1.875rem; font-weight: bold; text-align: center; color: #1f2937; margin-bottom: 1.5rem; }
+    .hope-message { font-weight: 500; color: #374151; line-height: 1.5; font-size: 1.25rem; text-align: center; margin-bottom: 1rem; }
+    .verse-box { background: #f9fafb; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.25rem; margin-top: 1rem; }
+    .verse-text { font-style: italic; color: #4b5563; text-align: center; }
+    .controls { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    input, button, select { width: 100%; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid #d1d5db; font-size: 1rem; outline: none; }
+    button { background-color: #2563eb; color: white; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s; }
+    button:hover { background-color: #1d4ed8; }
+    .badge-btn { background-color: #16a34a; }
+    .badge-btn:hover { background-color: #15803d; }
+    .slider-label { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; display: block; }
+    input[type="range"] { padding: 0; }
+    .install-btn { position: fixed; bottom: 1.5rem; right: 1.5rem; background-color: #0891b2; color: white; padding: 0.75rem 1.25rem; border-radius: 9999px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: none; font-weight: 600; cursor: pointer; width: auto; z-index: 50; }
+    .flex-row { display: flex; gap: 0.5rem; }
+    .flex-row select, .flex-row button { flex: 1; }
+    .status { font-size: 0.875rem; text-align: center; color: #4b5563; margin-top: 0.5rem; padding: 0.5rem; background: #f3f4f6; border-radius: 0.5rem; }
+    .badge-preview { display: inline-block; background: #ef4444; color: white; border-radius: 9999px; padding: 0.125rem 0.5rem; font-size: 0.75rem; font-weight: bold; margin-left: 0.5rem; }
+    @media (max-width: 640px) { .card { padding: 1rem; } h1 { font-size: 1.5rem; } }
   </style>
 </head>
 <body>
-  <div class="card" id="app">
-    <h1>💙 Daily Hope</h1>
-    <div class="message-container">
-      <div class="hope-message" id="hopeMessage">Loading...</div>
-      <div class="verse-box">
-        <div class="verse-text" id="verseText">Loading...</div>
-      </div>
+  <div class="card">
+    <h1>💙 Daily Hope <span id="badgeIndicator" style="display:none;" class="badge-preview">!</span></h1>
+    
+    <div class="hope-message" id="hopeMessage">Loading...</div>
+    <div class="verse-box">
+      <div class="verse-text" id="verseText">Loading...</div>
     </div>
+    
     <div class="controls">
       <input type="text" id="customMessageInput" placeholder="Write your own hope message">
       <input type="text" id="customVerseInput" placeholder="Write your own comforting verse">
@@ -242,19 +81,21 @@
       
       <hr>
       <div class="flex-row">
-        <select id="popupInterval">
+        <select id="badgeInterval">
           <option value="30">Every 30 minutes</option>
           <option value="60">Every 1 hour</option>
         </select>
-        <button id="startPopupBtn" class="popup-btn">⏰ Start Auto Popup</button>
+        <button id="startBadgeBtn" class="badge-btn">🔔 Show Badge on Home Screen</button>
       </div>
-      <div id="popupStatus" class="status">💡 Click "Start Auto Popup" - it will pop up on your screen automatically!</div>
+      <div id="badgeStatus" class="status">
+        💡 Click "Show Badge on Home Screen" - the app icon will get a red badge!
+      </div>
     </div>
   </div>
-  <button id="installBtn" class="install-btn" style="display: none;">📲 Install App</button>
+  <button id="installBtn" class="install-btn" style="display: none;">📲 Install App First!</button>
 
   <script>
-    // ---------- DATA ----------
+    // Data
     const defaultMessages = [
       "Keep going — brighter days are ahead.",
       "You are stronger than this moment.",
@@ -266,17 +107,15 @@
       "Hope grows even in quiet places."
     ];
     const defaultVerses = [
-      "Psalm 46:1 — God is our refuge and strength, an ever-present help in trouble.",
-      "Isaiah 41:10 — Do not fear, for I am with you.",
-      "Jeremiah 29:11 — For I know the plans I have for you.",
-      "Matthew 11:28 — Come to me, all who are weary.",
-      "Romans 15:13 — May the God of hope fill you with joy and peace.",
-      "Philippians 4:13 — I can do all things through Christ who strengthens me."
+      "Psalm 46:1 — God is our refuge and strength",
+      "Isaiah 41:10 — Do not fear, for I am with you",
+      "Jeremiah 29:11 — For I know the plans I have for you",
+      "Matthew 11:28 — Come to me, all who are weary",
+      "Romans 15:13 — May the God of hope fill you with joy",
+      "Philippians 4:13 — I can do all things through Christ"
     ];
 
-    function randomItem(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+    function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
     // DOM elements
     const hopeMessageEl = document.getElementById('hopeMessage');
@@ -287,30 +126,26 @@
     const sizeValueSpan = document.getElementById('sizeValue');
     const updateBtn = document.getElementById('updateBtn');
     const installBtn = document.getElementById('installBtn');
-    const startPopupBtn = document.getElementById('startPopupBtn');
-    const popupIntervalSelect = document.getElementById('popupInterval');
-    const popupStatus = document.getElementById('popupStatus');
+    const startBadgeBtn = document.getElementById('startBadgeBtn');
+    const badgeIntervalSelect = document.getElementById('badgeInterval');
+    const badgeStatus = document.getElementById('badgeStatus');
+    const badgeIndicator = document.getElementById('badgeIndicator');
 
     // State
     let customMessage = '';
     let customVerse = '';
     let fontSize = 22;
-    let popupTimer = null;
-    let popupActive = false;
-    let nextPopupTime = null;
+    let badgeTimer = null;
+    let badgeActive = false;
 
-    // Get current message (for popup)
     function getCurrentMessage() {
-      if (customMessage.trim() !== '') return customMessage;
-      return randomItem(defaultMessages);
+      return customMessage.trim() !== '' ? customMessage : randomItem(defaultMessages);
     }
     
     function getCurrentVerse() {
-      if (customVerse.trim() !== '') return customVerse;
-      return randomItem(defaultVerses);
+      return customVerse.trim() !== '' ? customVerse : randomItem(defaultVerses);
     }
 
-    // Update main UI
     function refreshDisplay() {
       hopeMessageEl.textContent = getCurrentMessage();
       verseTextEl.textContent = getCurrentVerse();
@@ -326,117 +161,97 @@
       customMessage = customMessageInput.value;
       customVerse = customVerseInput.value;
       refreshDisplay();
-      // Save to localStorage
       localStorage.setItem('customMessage', customMessage);
       localStorage.setItem('customVerse', customVerse);
     }
 
-    function handleFontSizeChange(e) {
-      fontSize = Number(e.target.value);
-      applyFontSize();
-      localStorage.setItem('fontSize', fontSize);
-    }
-
-    // ----- POPUP FUNCTION (NO PERMISSION NEEDED!) -----
-    function showPopup() {
-      const message = getCurrentMessage();
-      const verse = getCurrentVerse();
-      
-      // Create popup overlay
-      const overlay = document.createElement('div');
-      overlay.className = 'popup-overlay';
-      overlay.innerHTML = `
-        <div class="popup-card">
-          <button class="close-popup" onclick="this.closest('.popup-overlay').remove()">✕</button>
-          <h2>💙 Time for Hope!</h2>
-          <p style="font-size: 20px; font-weight: 500;">${message}</p>
-          <p style="font-style: italic; color: #6b7280;">${verse}</p>
-          <button onclick="this.closest('.popup-overlay').remove()">OK</button>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      
-      // Auto-close after 10 seconds
-      setTimeout(() => {
-        if (overlay && overlay.parentNode) overlay.remove();
-      }, 10000);
-      
-      // Play a subtle sound/beep (optional)
-      try {
-        const beep = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
-        beep.play().catch(() => {});
-      } catch(e) {}
-      
-      // Update status with next popup time
-      updateStatusMessage();
-    }
-    
-    function updateStatusMessage() {
-      if (popupActive && nextPopupTime) {
-        const minutesLeft = Math.ceil((nextPopupTime - Date.now()) / 60000);
-        if (minutesLeft > 0) {
-          popupStatus.innerHTML = `✅ Auto popup ACTIVE! Next popup in <span class="countdown">${minutesLeft} minutes</span>. The app will pop up automatically on your screen! 🎉`;
+    // --- HOME SCREEN BADGE (shows on app icon) ---
+    function updateBadge(count) {
+      // Try modern badge API (supported on Android Chrome when installed)
+      if (navigator.setAppBadge) {
+        if (count > 0) {
+          navigator.setAppBadge(count).catch(err => console.log('Badge not supported'));
+          badgeIndicator.style.display = 'inline-block';
+          badgeIndicator.textContent = count;
         } else {
-          popupStatus.innerHTML = `✅ Auto popup ACTIVE! Waiting for next scheduled time...`;
+          navigator.clearAppBadge().catch(err => console.log('Cannot clear badge'));
+          badgeIndicator.style.display = 'none';
         }
-      } else if (popupActive) {
-        popupStatus.innerHTML = `✅ Auto popup ACTIVE! The app will pop up on your screen every ${popupIntervalSelect.value} minutes.`;
       } else {
-        popupStatus.innerHTML = `💡 Click "Start Auto Popup" - it will pop up on your screen automatically (no permission needed!)`;
+        // Fallback: show indicator in app title
+        if (count > 0) {
+          badgeIndicator.style.display = 'inline-block';
+          badgeIndicator.textContent = '!';
+          document.title = `(📌) Daily Hope`;
+        } else {
+          badgeIndicator.style.display = 'none';
+          document.title = `Daily Hope`;
+        }
+        badgeStatus.innerHTML = `⚠️ Your browser doesn't support home screen badges fully. But you'll see a marker in the app!<br>For best results: Install the app first, then badges will appear on the home screen icon.`;
+      }
+      
+      // Also update status message
+      if (count > 0) {
+        badgeStatus.innerHTML = `✅ ACTIVE! Your app icon will show a badge every ${badgeIntervalSelect.value} minutes.<br>📱 Tap the app icon to see your new hope message!`;
+      } else {
+        badgeStatus.innerHTML = `💡 Click "Show Badge on Home Screen" - the app icon will get a red badge! Then tap it to see your message.`;
       }
     }
     
-    function startPopup(minutes) {
-      // Stop existing timer
-      if (popupTimer) {
-        clearInterval(popupTimer);
-        popupTimer = null;
-      }
+    function triggerBadgeAndRefresh() {
+      // Show badge on home screen icon
+      updateBadge(1);
       
-      // Show first popup immediately to confirm it works
+      // Also refresh the message so when they open the app, it's new
+      refreshDisplay();
+      
+      // Clear badge after 5 seconds (so next interval can show it again)
       setTimeout(() => {
-        showPopup();
-      }, 500);
+        if (badgeActive) {
+          updateBadge(0);
+        }
+      }, 5000);
+    }
+    
+    function startBadge(minutes) {
+      if (badgeTimer) clearInterval(badgeTimer);
       
-      // Set interval for future popups
-      popupTimer = setInterval(() => {
-        showPopup();
-        // Refresh status after showing popup
-        updateStatusMessage();
+      // Trigger immediately to show it works
+      triggerBadgeAndRefresh();
+      
+      // Set interval
+      badgeTimer = setInterval(() => {
+        triggerBadgeAndRefresh();
       }, minutes * 60 * 1000);
       
-      // Calculate next popup time
-      nextPopupTime = Date.now() + (minutes * 60 * 1000);
-      popupActive = true;
+      badgeActive = true;
+      localStorage.setItem('badgeActive', 'true');
+      localStorage.setItem('badgeMinutes', minutes);
       
-      // Save to localStorage
-      localStorage.setItem('popupActive', 'true');
-      localStorage.setItem('popupMinutes', minutes);
-      
-      updateStatusMessage();
+      startBadgeBtn.textContent = '🛑 Stop Badge';
+      startBadgeBtn.style.backgroundColor = '#dc2626';
     }
     
-    function stopPopup() {
-      if (popupTimer) {
-        clearInterval(popupTimer);
-        popupTimer = null;
+    function stopBadge() {
+      if (badgeTimer) {
+        clearInterval(badgeTimer);
+        badgeTimer = null;
       }
-      popupActive = false;
-      nextPopupTime = null;
-      localStorage.removeItem('popupActive');
-      popupStatus.innerHTML = `⏸️ Auto popup stopped. Click "Start Auto Popup" to restart.`;
+      badgeActive = false;
+      updateBadge(0);
+      localStorage.removeItem('badgeActive');
+      
+      startBadgeBtn.textContent = '🔔 Show Badge on Home Screen';
+      startBadgeBtn.style.backgroundColor = '#16a34a';
+      badgeStatus.innerHTML = `⏸️ Badge stopped. Click "Show Badge" to restart.`;
     }
     
-    function handleStartPopup() {
-      if (popupActive) {
-        stopPopup();
-        startPopupBtn.textContent = '⏰ Start Auto Popup';
-        startPopupBtn.style.backgroundColor = '#16a34a';
+    function handleStartBadge() {
+      if (badgeActive) {
+        stopBadge();
       } else {
-        const minutes = parseInt(popupIntervalSelect.value, 10);
-        startPopup(minutes);
-        startPopupBtn.textContent = '🛑 Stop Auto Popup';
-        startPopupBtn.style.backgroundColor = '#dc2626';
+        const minutes = parseInt(badgeIntervalSelect.value, 10);
+        startBadge(minutes);
       }
     }
     
@@ -445,8 +260,8 @@
       const savedMessage = localStorage.getItem('customMessage');
       const savedVerse = localStorage.getItem('customVerse');
       const savedFontSize = localStorage.getItem('fontSize');
-      const savedPopupActive = localStorage.getItem('popupActive');
-      const savedPopupMinutes = localStorage.getItem('popupMinutes');
+      const savedBadgeActive = localStorage.getItem('badgeActive');
+      const savedBadgeMinutes = localStorage.getItem('badgeMinutes');
       
       if (savedMessage) {
         customMessage = savedMessage;
@@ -464,37 +279,39 @@
       
       refreshDisplay();
       
-      // Restore popup if it was active
-      if (savedPopupActive === 'true' && savedPopupMinutes) {
+      if (savedBadgeActive === 'true' && savedBadgeMinutes) {
         setTimeout(() => {
-          startPopup(parseInt(savedPopupMinutes));
-          startPopupBtn.textContent = '🛑 Stop Auto Popup';
-          startPopupBtn.style.backgroundColor = '#dc2626';
+          startBadge(parseInt(savedBadgeMinutes));
         }, 1000);
       }
     }
 
-    // Auto-refresh display every hour (in case custom messages changed elsewhere)
-    setInterval(() => {
-      refreshDisplay();
-    }, 60 * 60 * 1000);
+    // Auto-refresh
+    setInterval(() => refreshDisplay(), 60 * 60 * 1000);
 
     // Event listeners
     updateBtn.addEventListener('click', handleUpdate);
     fontSizeSlider.addEventListener('input', handleFontSizeChange);
-    startPopupBtn.addEventListener('click', handleStartPopup);
+    startBadgeBtn.addEventListener('click', handleStartBadge);
+    
+    function handleFontSizeChange(e) {
+      fontSize = Number(e.target.value);
+      applyFontSize();
+      localStorage.setItem('fontSize', fontSize);
+    }
 
-    // Initial display
+    // Initial load
     refreshDisplay();
     applyFontSize();
     loadSavedSettings();
 
-    // ---------- PWA: Install prompt ----------
+    // PWA Install prompt
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       installBtn.style.display = 'block';
+      badgeStatus.innerHTML = `✅ First, click "Install App First!" to add to home screen. THEN click "Show Badge" - the red badge will appear on the app icon! 📱`;
     });
 
     installBtn.addEventListener('click', async () => {
@@ -503,11 +320,12 @@
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
         installBtn.style.display = 'none';
+        badgeStatus.innerHTML = `🎉 App installed to home screen! Now click "Show Badge on Home Screen" - you'll see a red badge on the app icon every 30 minutes!`;
       }
       deferredPrompt = null;
     });
 
-    // ---------- Service worker for offline ----------
+    // Service worker for offline
     if ('serviceWorker' in navigator && location.protocol !== 'file:') {
       window.addEventListener('load', () => {
         const swCode = `const CACHE_NAME = 'hope-v1';
@@ -517,9 +335,8 @@ self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r
         const blob = new Blob([swCode], {type: 'application/javascript'});
         const url = URL.createObjectURL(blob);
         navigator.serviceWorker.register(url).then(reg => {
-          console.log('Service worker registered');
           URL.revokeObjectURL(url);
-        }).catch(err => console.log('SW registration failed:', err));
+        }).catch(() => {});
       });
     }
   </script>
